@@ -13,11 +13,13 @@ def index():
 @app.route("/", methods=['POST'])
 def processing():
     vk = vk_receiver.VkReceiver(request.data)
-    if vk.received_type() == 'confirmation':
+    received_type = vk.received_type()
+
+    if received_type == 'confirmation':
         return settings.vk_confirmation
-    elif vk.received_type() == 'other':
+    elif received_type == 'other':
         return 'ok'
-    elif vk.received_type() == 'wall_post_new':
+    elif received_type == 'wall_post_new':
         recived_data = vk.recive_wall_post()
         text = recived_data['text']
         image_url = recived_data['image_url']
