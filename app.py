@@ -22,6 +22,7 @@ def processing():
         image_url = recived_data['image_url']
         telegram.send_message(text)
         telegram.send_photo(image_url)
+        return 'ok'
 
 
 
