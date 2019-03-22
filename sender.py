@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from abc import  ABC, abstractmethod
 
 
@@ -8,6 +8,14 @@ class Sender(ABC):
     @abstractmethod
     def send_message(self, text):
        pass
+
+    @abstractmethod
+    def send_image(self, image_url):
+        pass
+
+    @abstractmethod
+    def send_video(self, video_url):
+        pass
 
 
 
@@ -30,9 +38,12 @@ class TelegramSender(Sender):
         url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text)
         requests.get(url)
 
-    def send_photo(self, photo_url):
+    def send_image(self, photo_url):
         url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
         requests.get(url)
+
+    def send_video(self, video_url):
+        self.send_message(video_url)
 
 
 class DiscordSender(Sender):
@@ -44,3 +55,32 @@ class DiscordSender(Sender):
     def send_message(self, text):
         requests.post(self.hook_url, {'content': text})
 
+    #гифка или картинка
+    def send_image(self, url):
+        to_send_data = {}
+        to_send_data["embeds"] = []
+        embed = {}
+        embed["image"] = {'url': url}
+        to_send_data["embeds"].append(embed)
+        requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})
+
+
+    def send_video(self, video_url):
+        self.send_message(video_url)
+
+    #https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
+    # def send_video(self, url):
+    #     to_send_data = {}
+    #     to_send_data["embeds"] = []
+    #     embed = {}
+    #     embed["video"] = {'url': url}
+    #     to_send_data["embeds"].append(embed)
+    #     requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})
+    #
+    # def send_url(self, url):
+    #     to_send_data = {}
+    #     to_send_data["embeds"] = []
+    #     embed = {}
+    #     embed["url"] = url
+    #     to_send_data["embeds"].append(embed)
+    #     requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})

@@ -24,11 +24,24 @@ class VkReceiver:
 
     def recive_wall_post(self):
         if self.data['type'] == 'wall_post_new':
-            text = self.data['object']['copy_history'][0]['text']
-            if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
-                image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_807']
+            #проверяем репост это или оригинальная запись и обрабатываем немного разными способами
+            is_it_repost = 'copy_history' in self.data['object']
+
+            if is_it_repost == True:
+                text = self.data['object']['copy_history'][0]['text']
+                if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
+                    image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_807']
+                else:
+                    image_url = None
             else:
-                image_url = None
+                text = self.data['object']['text']
+                if self.data['object']['attachments'][0]['type'] == 'photo':
+                    image_url = self.data['object']['attachments'][0]['photo']['photo_807']
+                else:
+                    image_url = None
+
+
+
             return {'text':text, 'image_url': image_url}
 
 
