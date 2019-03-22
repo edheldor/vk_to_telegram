@@ -1,5 +1,11 @@
 import requests
 
+proxies = {
+  'http': 'http://150.109.194.70:1080',
+  'https': 'https://150.109.194.70:1080',
+}
+
+
 class TelegramSender():
 
 
@@ -16,8 +22,8 @@ class TelegramSender():
 
     def send_message(self, text):
         url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text)
-        requests.get(url)
+        requests.get(url, proxies=proxies)
 
     def send_photo(self, photo_url):
         url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
-        requests.get(url)
+        requests.get(url, proxies=proxies)
