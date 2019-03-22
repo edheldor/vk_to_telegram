@@ -31,13 +31,13 @@ class VkReceiver:
             if self.repost_checker() == True:
                 text = self.data['object']['copy_history'][0]['text']
                 if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
-                    image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_807']
+                    image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_604']
                 else:
                     image_url = None
             else:
                 text = self.data['object']['text']
                 if self.data['object']['attachments'][0]['type'] == 'photo':
-                    image_url = self.data['object']['attachments'][0]['photo']['photo_807']
+                    image_url = self.data['object']['attachments'][0]['photo']['photo_604']
                 else:
                     image_url = None
 
