@@ -1,4 +1,4 @@
-import vk_api, settings, telegram_sender,vk_receiver
+import settings, telegram_sender,vk_receiver
 from flask import Flask, request, json
 
 telegram = telegram_sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
@@ -22,6 +22,7 @@ def processing():
         image_url = recived_data['image_url']
         telegram.send_message(text)
         telegram.send_photo(image_url)
+        return 'ok'
 
 
 
