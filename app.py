@@ -1,7 +1,7 @@
-import settings, telegram_sender,vk_receiver
+import settings, sender,vk_receiver
 from flask import Flask, request, json
 
-telegram = telegram_sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
+telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
 app = Flask(__name__)
 
 

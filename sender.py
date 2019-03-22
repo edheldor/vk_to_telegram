@@ -1,13 +1,18 @@
 import requests
-
-#proxies = {
-#  'http': 'http://150.109.194.70:1080',
-#  'https': 'https://150.109.194.70:1080',
-#}
-#requests.get(url, proxies=proxies)
+from abc import  ABC, abstractmethod
 
 
-class TelegramSender():
+class Sender(ABC):
+
+
+    @abstractmethod
+    def send_message(self, text):
+       pass
+
+
+
+
+class TelegramSender(Sender):
 
 
     def __init__(self, bot_token, chat_id):
@@ -28,3 +33,14 @@ class TelegramSender():
     def send_photo(self, photo_url):
         url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
         requests.get(url)
+
+
+class DiscordSender(Sender):
+
+
+    def __init__(self, hook_url):
+        self.hook_url = hook_url
+
+    def send_message(self, text):
+        requests.post(self.hook_url, {'content': text})
+
