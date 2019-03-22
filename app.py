@@ -1,4 +1,4 @@
-import vk_api, settings, telegram_sender
+import vk_api, settings, telegram_sender,vk_receiver
 from flask import Flask, request, json
 
 telegram = telegram_sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
@@ -11,22 +11,23 @@ def index():
 
 @app.route("/", methods=['POST'])
 def processing():
-    data = json.loads(request.data)
-
-    if 'type' not in data.keys():
+    vk = vk_receiver.VkReceiver(request.data)
+    if vk.received_type() == 'confirmation':
+        return settings.vk_confirmation
+    elif vk.received_type() == 'other':
         return 'ok'
-    if data['type'] == 'confirmation':
-        return settings.vkConfirmation
-    elif data['type'] == 'wall_post_new':
-        text = data['object']['copy_history'][0]['text']
-        if data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
-            imageUrl = data['object']['copy_history'][0]['attachments'][0]['photo']['photo_807']
-
+    elif vk.received_type() == 'wall_post_new':
+        recived_data = vk.recive_wall_post()
+        text = recived_data['text']
+        image_url = recived_data['image_url']
         telegram.send_message(text)
-        if (imageUrl):
-            telegram.send_photo(imageUrl)
+        telegram.send_message(image_url)
 
-        return 'ok'
+
+
+
+
+
 
 
 
