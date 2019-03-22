@@ -2,6 +2,7 @@ import settings, sender,vk_receiver
 from flask import Flask, request, json
 
 telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
+discord = sender.DiscordSender(settings.discord_hook)
 app = Flask(__name__)
 
 
@@ -21,7 +22,10 @@ def processing():
         text = recived_data['text']
         image_url = recived_data['image_url']
         telegram.send_message(text)
-        telegram.send_photo(image_url)
+        telegram.send_image(image_url)
+        discord.send_message(text)
+        discord.send_image(image_url)
+
         return 'ok'
 
 
