@@ -21,7 +21,7 @@ def processing():
         text = recived_data['text']
         image_url = recived_data['image_url']
         telegram.send_message(text)
-        telegram.send_message(image_url)
+        telegram.send_photo(image_url)
 
 
 
