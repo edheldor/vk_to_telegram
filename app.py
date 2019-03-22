@@ -1,7 +1,8 @@
-import settings, telegram_sender,vk_receiver
+import settings, sender,vk_receiver
 from flask import Flask, request, json
 
-telegram = telegram_sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
+telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
+discord = sender.DiscordSender(settings.discord_hook)
 app = Flask(__name__)
 
 
@@ -12,16 +13,21 @@ def index():
 @app.route("/", methods=['POST'])
 def processing():
     vk = vk_receiver.VkReceiver(request.data)
-    if vk.received_type() == 'confirmation':
+    received_type = vk.received_type()
+
+    if received_type == 'confirmation':
         return settings.vk_confirmation
-    elif vk.received_type() == 'other':
+    elif received_type == 'other':
         return 'ok'
-    elif vk.received_type() == 'wall_post_new':
+    elif received_type == 'wall_post_new':
         recived_data = vk.recive_wall_post()
         text = recived_data['text']
         image_url = recived_data['image_url']
         telegram.send_message(text)
-        telegram.send_photo(image_url)
+        telegram.send_image(image_url)
+        discord.send_message(text)
+        discord.send_image(image_url)
+
         return 'ok'
 
 
