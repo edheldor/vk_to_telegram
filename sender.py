@@ -1,4 +1,5 @@
 import requests, json
+from urllib.parse import quote
 from abc import  ABC, abstractmethod
 
 
@@ -35,6 +36,7 @@ class TelegramSender(Sender):
             return self.url + 'sendPhoto?chat_id={}'.format(chat_id)
 
     def send_message(self, text):
+        text = quote(text)
         url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text)
         requests.get(url)
 
