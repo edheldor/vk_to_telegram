@@ -3,7 +3,7 @@ from urllib.parse import quote
 from abc import  ABC, abstractmethod
 
 
-class Sender(ABC):
+class ToMessengerSender(ABC):
 
 
     @abstractmethod
@@ -21,7 +21,7 @@ class Sender(ABC):
 
 
 
-class TelegramSender(Sender):
+class TelegramSender(ToMessengerSender):
 
 
     def __init__(self, bot_token, chat_id):
@@ -48,7 +48,7 @@ class TelegramSender(Sender):
         self.send_message(video_url)
 
 
-class DiscordSender(Sender):
+class DiscordSender(ToMessengerSender):
 
 
     def __init__(self, hook_url):
@@ -86,3 +86,18 @@ class DiscordSender(Sender):
     #     embed["url"] = url
     #     to_send_data["embeds"].append(embed)
     #     requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})
+
+
+class Sender():
+    def __init__(self, senders: ToMessengerSender):
+        self.senders = []
+        for sender in senders:
+            self.senders.append(sender)
+
+    def send_messages(self, text):
+        for sender in self.senders:
+            sender.send_message(text)
+
+    def send_image (self, image_url):
+        for sender in self.senders:
+            sender.send_image(image_url)

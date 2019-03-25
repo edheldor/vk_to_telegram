@@ -1,8 +1,9 @@
-import settings, sender,vk_receiver
+import settings, sender, vk_receiver
 from flask import Flask, request, json
 
 telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
 discord = sender.DiscordSender(settings.discord_hook)
+sender = sender.Sender([telegram, discord])
 app = Flask(__name__)
 
 
@@ -23,10 +24,9 @@ def processing():
         recived_data = vk.recive_wall_post()
         text = recived_data['text']
         image_url = recived_data['image_url']
-        telegram.send_message(text)
-        telegram.send_image(image_url)
-        discord.send_message(text)
-        discord.send_image(image_url)
+
+        sender.send_messages(text)
+        sender.send_image(image_url)
 
         return 'ok'
 
