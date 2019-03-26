@@ -43,7 +43,7 @@ class VkReceiver:
                 else:
                     image_url = None
             else:
-                self.logger.info("Не репост, ориинальная запись")
+                self.logger.info("Не репост, оригинальная запись")
                 self.logger.info(self.data)
                 text = self.data['object']['text']
                 if self.data['object']['attachments'][0]['type'] == 'photo':
