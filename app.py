@@ -1,10 +1,14 @@
-import settings, sender,vk_receiver
+import settings, sender, vk_receiver, logging
 from flask import Flask, request, json
 
+logging.basicConfig(filename='log.log', format='%(asctime)s :: 	%(levelname)s :: %(name)s :: %(message)s', level=logging.INFO)
+logger = logging.getLogger('Vk To Messengers')
 telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
 discord = sender.DiscordSender(settings.discord_hook)
+sender = sender.Sender([telegram, discord])
 app = Flask(__name__)
 
+logger.info('Старт веб сервера')
 
 @app.route ("/", methods=['GET'])
 def index():
@@ -23,10 +27,9 @@ def processing():
         recived_data = vk.recive_wall_post()
         text = recived_data['text']
         image_url = recived_data['image_url']
-        telegram.send_message(text)
-        telegram.send_image(image_url)
-        discord.send_message(text)
-        discord.send_image(image_url)
+
+        sender.send_messages(text)
+        sender.send_image(image_url)
 
         return 'ok'
 

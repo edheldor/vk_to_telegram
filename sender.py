@@ -1,8 +1,9 @@
-import requests, json
+import requests, json, logging
+from urllib.parse import quote
 from abc import  ABC, abstractmethod
 
 
-class Sender(ABC):
+class ToMessengerSender(ABC):
 
 
     @abstractmethod
@@ -20,13 +21,14 @@ class Sender(ABC):
 
 
 
-class TelegramSender(Sender):
+class TelegramSender(ToMessengerSender):
 
 
     def __init__(self, bot_token, chat_id):
         self.bot_token = bot_token
         self.url = 'http://api.telegram.org/bot{}/'.format(bot_token)
         self.chat_id = chat_id
+        self.logger = logging.getLogger('Vk To Messengers.TelegramSender')
 
     def create_url(self, url_type, chat_id):
         if url_type == 'sendMessage':
@@ -35,25 +37,36 @@ class TelegramSender(Sender):
             return self.url + 'sendPhoto?chat_id={}'.format(chat_id)
 
     def send_message(self, text):
+        text = quote(text)
         url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text)
         requests.get(url)
+        self.logger.info("Отправлен текст в телеграм")
+        self.logger.info("Адрес {}".format(url))
+        self.logger.info('Содержимое: {}'.format(text))
 
     def send_image(self, photo_url):
         url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
         requests.get(url)
+        self.logger.info("Отправлена картинка в телеграм")
+        self.logger.info("Адрес {}".format(url))
+        self.logger.info('Содержимое: {}'.format(photo_url))
 
     def send_video(self, video_url):
         self.send_message(video_url)
 
 
-class DiscordSender(Sender):
+class DiscordSender(ToMessengerSender):
 
 
     def __init__(self, hook_url):
         self.hook_url = hook_url
+        self.logger = logging.getLogger('Vk To Messengers.DiscordSender')
 
     def send_message(self, text):
         requests.post(self.hook_url, {'content': text})
+        self.logger.info("Отправлено сообщение в дискорд")
+        self.logger.info("Адрес {}".format(self.hook_url))
+        self.logger.info('Содержимое: {}'.format(text))
 
     #гифка или картинка
     def send_image(self, url):
@@ -63,6 +76,9 @@ class DiscordSender(Sender):
         embed["image"] = {'url': url}
         to_send_data["embeds"].append(embed)
         requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})
+        self.logger.info("Отправлена гифка или картинка в дискорд")
+        self.logger.info("Адрес {}".format(self.hook_url))
+        self.logger.info('Содержимое: {}'.format(to_send_data))
 
 
     def send_video(self, video_url):
@@ -84,3 +100,18 @@ class DiscordSender(Sender):
     #     embed["url"] = url
     #     to_send_data["embeds"].append(embed)
     #     requests.post(self.hook_url, data=json.dumps(to_send_data), headers={"Content-Type": "application/json"})
+
+
+class Sender():
+    def __init__(self, senders: ToMessengerSender):
+        self.senders = []
+        for sender in senders:
+            self.senders.append(sender)
+
+    def send_messages(self, text):
+        for sender in self.senders:
+            sender.send_message(text)
+
+    def send_image (self, image_url):
+        for sender in self.senders:
+            sender.send_image(image_url)
