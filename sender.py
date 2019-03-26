@@ -37,12 +37,13 @@ class TelegramSender(ToMessengerSender):
             return self.url + 'sendPhoto?chat_id={}'.format(chat_id)
 
     def send_message(self, text):
-        text = quote(text)
-        url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text)
+        text_to_log = text
+        text_to_send = quote(text)
+        url = self.create_url('sendMessage', self.chat_id) +  '&text={}'.format(text_to_send)
         requests.get(url)
         self.logger.info("Отправлен текст в телеграм")
         self.logger.info("Адрес {}".format(url))
-        self.logger.info('Содержимое: {}'.format(text))
+        self.logger.info('Содержимое: {}'.format(text_to_log))
 
     def send_image(self, photo_url):
         url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
