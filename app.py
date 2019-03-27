@@ -6,7 +6,9 @@ logger = logging.getLogger('Vk To Messengers')
 telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
 discord = sender.DiscordSender(settings.discord_hook)
 sender = sender.Sender([telegram, discord])
+recently_posted = 'recently_posted.txt'
 app = Flask(__name__)
+
 
 logger.info('Старт веб сервера')
 
@@ -28,8 +30,27 @@ def processing():
         text = recived_data['text']
         image_url = recived_data['image_url']
 
-        sender.send_messages(text)
-        sender.send_image(image_url)
+        #Проверка на повторную запись. Записываем хеш записи в файл, а в последующем проверяем не публиковали ли мы тоже самое. Бывают повторные колбэки от вк
+        repeated_data = False
+        post_hash = vk.post_hash()
+
+
+        with open(recently_posted, "r") as fh:
+            for string in fh:
+                if string == post_hash:
+                    repeated_data = True
+
+        if repeated_data == False:
+            with open(recently_posted, "a") as fh:
+                fh.write(post_hash)
+
+
+        if repeated_data == True:
+            logger.info('Повтор данных от ВК. Не публикуем')
+        else:
+            logger.info('Будем публиковатьь')
+            sender.send_messages(text)
+            sender.send_image(image_url)
 
         return 'ok'
 

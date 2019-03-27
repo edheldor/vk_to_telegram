@@ -1,4 +1,4 @@
-import json, logging
+import json, logging, hashlib
 
 class VkReceiver:
 
@@ -29,6 +29,41 @@ class VkReceiver:
 
     def repost_checker(self):
         return 'copy_history' in self.data['object']
+
+
+    def calculate_hash(self, text, image_url):
+        string_for_hash = "{}{}".format(text, image_url)
+        string_for_hash = string_for_hash.encode('utf-8')
+        hashed_string = hashlib.md5(string_for_hash)
+        hashed_string = hashed_string.hexdigest()
+        return hashed_string
+
+
+
+    def post_hash(self):
+        string_for_hash = None
+        if self.repost_checker() == True:
+            text = self.data['object']['copy_history'][0]['text']
+            if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
+                image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_604']
+            else:
+                image_url = None
+
+            hashed_string = self.calculate_hash(text,image_url)
+            self.logger.info("Хэш для записи (репост) {}".format(hashed_string))
+            return hashed_string
+
+        else:
+            text = self.data['object']['text']
+            if self.data['object']['attachments'][0]['type'] == 'photo':
+                image_url = self.data['object']['attachments'][0]['photo']['photo_604']
+            else:
+                image_url = None
+
+            hashed_string = self.calculate_hash(text,image_url)
+            self.logger.info("Хэш для записи (репост) {}".format(hashed_string))
+            return hashed_string
+
 
     def recive_wall_post(self):
         if self.data['type'] == 'wall_post_new':
