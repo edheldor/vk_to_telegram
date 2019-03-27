@@ -44,7 +44,7 @@ def processing():
 
         if repeated_data == False:
             with open(recently_posted, "a") as fh:
-                fh.write(post_hash)
+                fh.write(post_hash + "\n")
 
 
         if repeated_data == True:
