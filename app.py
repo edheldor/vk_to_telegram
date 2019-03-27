@@ -7,6 +7,8 @@ telegram = sender.TelegramSender(settings.tg_bot_token, settings.tg_chat_id)
 discord = sender.DiscordSender(settings.discord_hook)
 sender = sender.Sender([telegram, discord])
 recently_posted = 'recently_posted.txt'
+with open(recently_posted, 'a'):
+    pass
 app = Flask(__name__)
 
 
