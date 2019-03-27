@@ -39,7 +39,7 @@ def processing():
 
         with open(recently_posted, "r") as fh:
             for string in fh:
-                if string == post_hash:
+                if string == post_hash + "\n":
                     repeated_data = True
 
         if repeated_data == False:
