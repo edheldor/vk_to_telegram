@@ -13,6 +13,7 @@ class VkReceiver:
         else: self.type = 'other'
 
         self.logger = logging.getLogger('Vk To Messengers.VkReceiver')
+        self.hash = None
 
 
 
@@ -40,31 +41,6 @@ class VkReceiver:
 
 
 
-    def post_hash(self):
-        string_for_hash = None
-        if self.repost_checker() == True:
-            text = self.data['object']['copy_history'][0]['text']
-            if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
-                image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_604']
-            else:
-                image_url = None
-
-            hashed_string = self.calculate_hash(text,image_url)
-            self.logger.info("Хэш для записи (репост) {}".format(hashed_string))
-            return hashed_string
-
-        else:
-            text = self.data['object']['text']
-            if self.data['object']['attachments'][0]['type'] == 'photo':
-                image_url = self.data['object']['attachments'][0]['photo']['photo_604']
-            else:
-                image_url = None
-
-            hashed_string = self.calculate_hash(text,image_url)
-            self.logger.info("Хэш для записи (репост) {}".format(hashed_string))
-            return hashed_string
-
-
     def recive_wall_post(self):
         if self.data['type'] == 'wall_post_new':
             #проверяем репост это или оригинальная запись и обрабатываем немного разными способами
@@ -77,6 +53,12 @@ class VkReceiver:
                     image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_604']
                 else:
                     image_url = None
+
+                self.hash = self.calculate_hash(text, image_url)
+                self.logger.info("Хэш для записи (репост) {}".format(self.hash))
+
+
+
             else:
                 self.logger.info("Не репост, оригинальная запись")
                 self.logger.info(self.data)
@@ -86,7 +68,8 @@ class VkReceiver:
                 else:
                     image_url = None
 
-
+                self.hash = self.calculate_hash(text, image_url)
+                self.logger.info("Хэш для записи (оригинальная апись ) {}".format(self.hash))
 
             return {'text':text, 'image_url': image_url}
 

@@ -34,7 +34,7 @@ def processing():
 
         #Проверка на повторную запись. Записываем хеш записи в файл, а в последующем проверяем не публиковали ли мы тоже самое. Бывают повторные колбэки от вк
         repeated_data = False
-        post_hash = vk.post_hash()
+        post_hash = vk.hash
 
 
         with open(recently_posted, "r") as fh:
