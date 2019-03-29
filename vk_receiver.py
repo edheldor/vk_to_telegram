@@ -58,9 +58,10 @@ class VkReceiver:
                     photo_url = attachment['photo']['photo_604']
                     parsed_attachments['images'].append(photo_url)
                 if attachment['type'] == 'doc':
-                    gif_url = attachment['doc'].get('video')
-                    gif_url = gif_url.get['src']
-                    parsed_attachments['gifs'].append(gif_url)
+                    file_ext = attachment['doc'].get('ext')
+                    if file_ext == 'gif':
+                        gif_url = attachment['doc'].get('url')
+                        parsed_attachments['gifs'].append(gif_url)
             return  parsed_attachments
 
 

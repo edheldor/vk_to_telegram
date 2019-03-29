@@ -52,6 +52,8 @@ def processing():
             sender.send_messages(recived_data['text'])
             for image in recived_data['images']:
                 sender.send_image(image)
+            for gif in recived_data['gifs']:
+                sender.send_gif(gif)
 
 
         return 'ok'

@@ -18,6 +18,10 @@ class ToMessengerSender(ABC):
     def send_video(self, video_url):
         pass
 
+    @abstractmethod
+    def send_gif(self, gif_url):
+        pass
+
 
 
 
@@ -55,6 +59,9 @@ class TelegramSender(ToMessengerSender):
     def send_video(self, video_url):
         self.send_message(video_url)
 
+    def send_gif(self, gif_url):
+        self.send_image(gif_url)
+
 
 class DiscordSender(ToMessengerSender):
 
@@ -84,6 +91,9 @@ class DiscordSender(ToMessengerSender):
 
     def send_video(self, video_url):
         self.send_message(video_url)
+
+    def send_gif(self, gif_url):
+        self.send_video(gif_url)
 
     #https://gist.github.com/Birdie0/78ee79402a4301b1faf412ab5f1cdcf9
     # def send_video(self, url):
@@ -116,3 +126,7 @@ class Sender():
     def send_image (self, image_url):
         for sender in self.senders:
             sender.send_image(image_url)
+
+    def send_gif(self, gif_url):
+        for sender in self.senders:
+            sender.send_gif(gif_url)
