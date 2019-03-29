@@ -39,6 +39,33 @@ class VkReceiver:
         hashed_string = hashed_string.hexdigest()
         return hashed_string
 
+    def parse_wall_past(self, data):
+        parsed_attachments = dict()
+        parsed_attachments['text'] = None
+        parsed_attachments['images'] = []
+        parsed_attachments['gifs'] = []
+
+        self.logger.info("Начанаем разбор данных от ВК: {}".format(data))
+        text = data.get('text')
+        parsed_attachments['text'] = text
+
+        if data.get('attachments') == None:
+            return parsed_attachments
+        else:
+            recived_attachments = data['attachments']
+            for attachment in recived_attachments:
+                if attachment['type'] == 'photo':
+                    photo_url = attachment['photo']['photo_604']
+                    parsed_attachments['images'].append(photo_url)
+                if attachment['type'] == 'doc':
+                    gif_url = attachment['doc'].get('video')
+                    gif_url = gif_url.get['src']
+                    parsed_attachments['gifs'].append(gif_url)
+            return  parsed_attachments
+
+
+
+
 
 
     def recive_wall_post(self):
@@ -48,13 +75,9 @@ class VkReceiver:
             if self.repost_checker() == True:
                 self.logger.info("Репост")
                 self.logger.info(self.data)
-                text = self.data['object']['copy_history'][0]['text']
-                if self.data['object']['copy_history'][0]['attachments'][0]['type'] == 'photo':
-                    image_url = self.data['object']['copy_history'][0]['attachments'][0]['photo']['photo_604']
-                else:
-                    image_url = None
+                attachments = self.parse_wall_past(self.data['object']['copy_history'][0])
 
-                self.hash = self.calculate_hash(text, image_url)
+                self.hash = self.calculate_hash(attachments['text'], attachments.get('images'))
                 self.logger.info("Хэш для записи (репост) {}".format(self.hash))
 
 
@@ -62,16 +85,12 @@ class VkReceiver:
             else:
                 self.logger.info("Не репост, оригинальная запись")
                 self.logger.info(self.data)
-                text = self.data['object']['text']
-                if self.data['object']['attachments'][0]['type'] == 'photo':
-                    image_url = self.data['object']['attachments'][0]['photo']['photo_604']
-                else:
-                    image_url = None
+                attachments = self.parse_wall_past(self.data['object'])
 
-                self.hash = self.calculate_hash(text, image_url)
+                self.hash = self.calculate_hash(attachments['text'], attachments.get('images'))
                 self.logger.info("Хэш для записи (оригинальная апись ) {}".format(self.hash))
 
-            return {'text':text, 'image_url': image_url}
+            return attachments
 
 
 
