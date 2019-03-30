@@ -60,7 +60,7 @@ class TelegramSender(ToMessengerSender):
         self.send_message(video_url)
 
     def send_gif(self, gif_url):
-        self.send_image(gif_url)
+        self.send_message(gif_url)
 
 
 class DiscordSender(ToMessengerSender):
