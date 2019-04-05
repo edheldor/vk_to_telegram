@@ -29,8 +29,6 @@ def processing():
         return 'ok'
     elif received_type == 'wall_post_new':
         recived_data = vk.recive_wall_post()
-        text = recived_data['text']
-        image_url = recived_data['image_url']
 
         #Проверка на повторную запись. Записываем хеш записи в файл, а в последующем проверяем не публиковали ли мы тоже самое. Бывают повторные колбэки от вк
         repeated_data = False
@@ -51,8 +49,12 @@ def processing():
             logger.info('Повтор данных от ВК. Не публикуем')
         else:
             logger.info('Будем публиковатьь')
-            sender.send_messages(text)
-            sender.send_image(image_url)
+            sender.send_messages(recived_data['text'])
+            for image in recived_data['images']:
+                sender.send_image(image)
+            for gif in recived_data['gifs']:
+                sender.send_gif(gif)
+
 
         return 'ok'
 
