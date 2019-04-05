@@ -18,3 +18,5 @@
 - Вбить данные в файле settings.py.
 - vk_confirmation = '' можно нати в в панели  аминистрирования группой (Настройки -> Работа с API -> Callback API) **Строка, которую должен вернуть сервер:** (https://yadi.sk/i/yMhWjHro_7zCpg)
 
+# Видео туториал
+https://youtu.be/faEv-Pik5x8
