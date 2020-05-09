@@ -72,7 +72,9 @@ class VkReceiver:
     def recive_wall_post(self):
         if self.data['type'] == 'wall_post_new':
             #проверяем репост это или оригинальная запись и обрабатываем немного разными способами
-
+            #если это предложка или отложенная запись, ничего не делаем
+            if (self.data['object']['post_type'] == 'postpone') or (self.data['object']['post_type'] == 'suggest'):
+                return 'postpone_or_suggest'
             if self.repost_checker() == True:
                 self.logger.info("Репост")
                 self.logger.info(self.data)
