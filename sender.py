@@ -50,7 +50,7 @@ class TelegramSender(ToMessengerSender):
         self.logger.info('Содержимое: {}'.format(text_to_log))
 
     def send_image(self, photo_url):
-        url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(photo_url)
+        url = self.create_url('sendPhoto', self.chat_id) + '&photo={}'.format(quote(photo_url))
         requests.get(url)
         self.logger.info("Отправлена картинка в телеграм")
         self.logger.info("Адрес {}".format(url))
@@ -60,7 +60,7 @@ class TelegramSender(ToMessengerSender):
         self.send_message(video_url)
 
     def send_gif(self, gif_url):
-        self.send_image(gif_url)
+        self.send_message(gif_url)
 
 
 class DiscordSender(ToMessengerSender):
