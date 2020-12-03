@@ -1,4 +1,4 @@
-import json, logging, hashlib
+import json, logging, hashlib, requests, urllib.request
 
 
 class VkReceiver:
@@ -61,6 +61,8 @@ class VkReceiver:
                     file_ext = attachment['doc'].get('ext')
                     if file_ext == 'gif':
                         gif_url = attachment['doc'].get('url')
+                        response = urllib.request.urlopen(gif_url)
+                        gif_url = response.url
                         parsed_attachments['gifs'].append(gif_url)
             return parsed_attachments
 
